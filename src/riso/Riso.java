@@ -21,7 +21,6 @@ import processing.awt.PGraphicsJava2D;
 public class Riso extends PGraphicsJava2D {
 
 	public final static String VERSION = "##library.prettyVersion##";
-	private static PApplet applet;
 
 	public static int BLACK = 0x000000;
 	public static int BURGUNDY = 0x914e72;
@@ -190,263 +189,50 @@ public class Riso extends PGraphicsJava2D {
 		RISOCOLORS.put(0xff4c65, "FLUORESCENTRED");
 		RISOCOLORS.put(0x44d62c, "FLUORESCENTGREEN");
 	};
+	
+	private PApplet applet;
 
-	public static ArrayList<Riso> channels = new ArrayList<Riso>();
-
-	public int channelColor;
-	public int channelIndex;
-	public String channelName;
-
-	public Riso(PApplet p, int _channelColor) {
-		initialize(_channelColor, p.width, p.height, p, p.dataPath(""));
+	public ArrayList<Channel> channels = new ArrayList<Channel>();
+	
+	public Channel add(int channelColor) {
+		Channel c = add(channelColor, applet.width, applet.height);
+		return c;
 	}
 
-	public Riso(PApplet p, int _channelColor, int w, int h) {
-		this(p, _channelColor, w, h, p.dataPath(""));
-	}
-
-	public Riso(PApplet p, int _channelColor, int w, int h, String s) {
-		initialize(_channelColor, w, h, p, s);
-	}
-
-	public void initialize(int _channelColor, int w, int h, PApplet p, String s) {
-		if (Riso.applet == null) {
-			Riso.applet = p;
-		}
-
-		setParent(p);
-		setPrimary(false);
-		setPath(s);
-		setSize(w, h);
-
-		channelColor = _channelColor;
-		beginDraw();
-
-		channelIndex = Riso.channels.size();
-
-		channelName = Riso.RISOCOLORS.get(channelColor);
+	public Channel add(int channelColor, int w, int h) {
+		int channelIndex = channels.size();
+		String channelName = RISOCOLORS.get(channelColor);
 
 		if (channelName == null)
 			channelName = String.valueOf(channelIndex);
 
-		Riso.channels.add(this);
-
+		Channel c = new Channel(applet, channelColor, w, h);
+		
+		c.channelIndex = channelIndex;
+		c.channelName = channelName;
+		
+		channels.add(c);
+		
+		return c;
 	}
 
-	public void draw() {
-		endDraw();
-		this.parent.image(this, 0, 0);
-	}
-
-	public void export() {
-		String filename = channelName + ".png";
-		export(filename);
-	}
-
-	public void export(String filename) {
-		PImage buffer = parent.createImage(width, height, ARGB);
-		buffer.loadPixels();
-		loadPixels();
-		for (int i = 0; i < pixels.length; i++) {
-			buffer.pixels[i] = color(0, 0, 0, alpha(pixels[i]));
-		}
-		buffer.updatePixels();
-		buffer.save(filename);
-	}
-
-	public static void preview() {
-		Riso.channels.get(0).parent.blendMode(MULTIPLY);
-		for (Riso r : Riso.channels) {
+	public void preview() {
+		applet.blendMode(MULTIPLY);
+		for (Channel r : channels) {
 			r.draw();
 		}
-		Riso.channels.get(0).parent.blendMode(BLEND);
+		applet.blendMode(BLEND);
 	}
 
-	public static void print() {
-		for (Riso r : Riso.channels) {
+	public void print() {
+		for (Channel r : channels) {
 			r.export();
 		}
 	}
 
-	/*
-	 * Fill methods. Fill methods taking more than one parameter should throw an
-	 * error.
-	 */
+	
 
-	@Override
-	public void fill(float intensity) {
-		super.fill(red(channelColor), green(channelColor), blue(channelColor), intensity);
-	}
-
-	@Override
-	public void fill(int intensity) {
-		super.fill(red(channelColor), green(channelColor), blue(channelColor), intensity);
-	}
-
-	@Override
-	public void fill(float v1, float v2, float v3) {
-		throw new java.lang.Error("Please use fill() with a single argument.");
-	}
-
-	@Override
-	public void fill(float v1, float v2, float v3, float alpha) {
-		throw new java.lang.Error("Please use fill() with a single argument.");
-	}
-
-	@Override
-	public void fill(float gray, float alpha) {
-		throw new java.lang.Error("Please use fill() with a single argument.");
-	}
-
-	@Override
-	public void fill(int rgb, float alpha) {
-		throw new java.lang.Error("Please use fill() with a single argument.");
-	}
-
-	/*
-	 * Stroke methods. Stroke methods taking more than one parameter should throw an
-	 * error.
-	 */
-
-	@Override
-	public void stroke(float intensity) {
-		super.stroke(red(channelColor), green(channelColor), blue(channelColor), intensity);
-	}
-
-	@Override
-	public void stroke(float v1, float v2, float v3) {
-		throw new java.lang.Error("Please use stroke() with a single argument.");
-	}
-
-	@Override
-	public void stroke(float v1, float v2, float v3, float alpha) {
-		throw new java.lang.Error("Please use stroke() with a single argument.");
-	}
-
-	@Override
-	public void stroke(float gray, float alpha) {
-		throw new java.lang.Error("Please use stroke() with a single argument.");
-	}
-
-	@Override
-	public void stroke(int rgb, float alpha) {
-		throw new java.lang.Error("Please use stroke() with a single argument.");
-	}
-
-	@Override
-	public void stroke(int intensity) {
-		super.stroke(red(channelColor), green(channelColor), blue(channelColor), intensity);
-	}
-
-	/*
-	 * 
-	 * Image
-	 * 
-	 */
-
-	@Override
-	public void image(PImage img, float x, float y) {
-		image(img, x, y, img.width, img.height);
-	}
-
-	@Override
-	public void image(PImage img, float x, float y, float w, float h) {
-		float alphaValue = alpha(fillColor) / 255.0f;
-
-		PImage newImage = parent.createImage(img.width, img.height, ARGB);
-		img.loadPixels();
-		newImage.loadPixels();
-
-		int channelR = (int) red(channelColor) << 16;
-		int channelG = (int) green(channelColor) << 8;
-		int channelB = (int) blue(channelColor);
-
-		for (int i = 0; i < img.pixels.length; i++) {
-			int argb = img.pixels[i];
-
-			int a = (argb >> 24) & 0xFF;
-			int r = (argb >> 16) & 0xFF;
-			int g = (argb >> 8) & 0xFF;
-			int b = argb & 0xFF;
-
-			int finalA = a < 255 ? (int) (a * alphaValue) : (int) ((255f - ((r + g + b) / 3f)) * alphaValue);
-
-			finalA = finalA << 24;
-
-			newImage.pixels[i] = finalA | channelR | channelG | channelB;
-		}
-		newImage.updatePixels();
-		super.image(newImage, x, y, w, h);
-	}
-
-	public void cutout(PImage img) {
-		cutout(img, false);
-	}
-
-	public void cutout(PImage img, boolean antialias) {
-		img.loadPixels();
-		cutout(img.pixels, antialias);
-	}
-
-	public void cutout(int[] maskArray, boolean antialias) {
-		// TODO: Add anti-aliasing;
-
-		loadPixels();
-
-		// don't execute if mask image is different size
-		if (maskArray.length != pixels.length) {
-			throw new IllegalArgumentException("cutout() can only be used with an image that's the same size.");
-		}
-
-		for (int i = 0; i < pixels.length; i++) {
-			// if the maskarray's alpha is larger than 0, set the layers alpha to be 0
-			// otherwise keep the layers current alpha
-			int originalA = (pixels[i] >> 24) & 0xFF;
-			int maskA = (maskArray[i] >> 24) & 0xFF;
-			int newA = originalA;
-			if (maskA > 0) {
-				if (antialias) {
-					newA = Math.min(255 - maskA, originalA);
-				} else {
-					newA = 0;
-				}
-			}
-			pixels[i] = newA << 24 | (pixels[i] & 0xffffff);
-		}
-
-		updatePixels();
-	}
-
-	public static PImage extractRGBChannel(PImage img, String c) {
-		c = c.toLowerCase();
-
-		PImage out = applet.createImage(img.width, img.height, ARGB);
-		img.loadPixels();
-
-		out.loadPixels();
-
-		int v = 0;
-
-		for (int i = 0; i < img.pixels.length; i++) {
-			int a = img.pixels[i] >> 24 & 0xFF;
-
-			if (c == "r" || c == "red") {
-				v = img.pixels[i] >> 16 & 0xFF;
-			} else if (c == "g" || c == "green") {
-				v = img.pixels[i] >> 8 & 0xFF;
-			} else if (c == "b" || c == "blue") {
-				v = img.pixels[i] & 0xFF;
-			}
-
-			out.pixels[i] = a << 24 | v << 16 | v << 8 | v;
-		}
-
-		out.updatePixels();
-
-		return out;
-	}
-
-	public static int[] rgb2cmyk(int r, int g, int b) {
+	public int[] rgb2cmyk(int r, int g, int b) {
 		// adapted from https://mrtan.me/post/java-rgb-to-cmyk-converter.html
 		// or https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
 
@@ -465,7 +251,7 @@ public class Riso extends PGraphicsJava2D {
 		return new int[] { (int) (c * 255), (int) (m * 255), (int) (y * 255), (int) (k * 255) };
 	}
 
-	public static PImage extractCMYKChannel(PImage img, String c) {
+	public PImage extractCMYKChannel(PImage img, String c) {
 		// multichannel extraction courtesy of Robin Sloan
 
 		c = c.toLowerCase();
@@ -502,7 +288,7 @@ public class Riso extends PGraphicsJava2D {
 		return out;
 	}
 
-	public static PImage threshold(PImage img, int threshold) {
+	public PImage threshold(PImage img, int thresh) {
 		PImage out = applet.createImage(img.width, img.height, ARGB);
 		out.loadPixels();
 
@@ -512,14 +298,14 @@ public class Riso extends PGraphicsJava2D {
 			// double avg = (applet.red(img.pixels[i]) + applet.green(img.pixels[i]) +
 			// applet.blue(img.pixels[i])) / 3.0;
 			float avg = applet.brightness(img.pixels[i]);
-			out.pixels[i] = applet.color(avg < threshold ? 0 : 255);
+			out.pixels[i] = applet.color(avg < thresh ? 0 : 255);
 		}
 
 		out.updatePixels();
 		return out;
 	}
 
-	public static PImage halftone(PImage img, String shape, int frequency, float angle, int threshold) {
+	public PImage halftone(PImage img, String shape, int frequency, float angle, int thresh) {
 
 		img.loadPixels();
 
@@ -579,10 +365,10 @@ public class Riso extends PGraphicsJava2D {
 		rotatedCanvas.endDraw();
 
 		PImage result = rotatedCanvas.get(w / 2, h / 2, w, h);
-		return Riso.threshold(result, threshold);
+		return threshold(result, thresh);
 	}
 
-	public static PImage dither(PImage img, String type, int threshold) {
+	public PImage dither(PImage img, String type, int threshold) {
 		PImage out = applet.createImage(img.width, img.height, ARGB);
 		out.loadPixels();
 
@@ -653,6 +439,35 @@ public class Riso extends PGraphicsJava2D {
 			// out.pixels[i + 1] = out.pixels[i + 2] = out.pixels[i];
 		}
 		out.updatePixels();
+		return out;
+	}
+	
+	public PImage extractRGBChannel(PImage img, String c) {
+		c = c.toLowerCase();
+
+		PImage out = applet.createImage(img.width, img.height, ARGB);
+		img.loadPixels();
+
+		out.loadPixels();
+
+		int v = 0;
+
+		for (int i = 0; i < img.pixels.length; i++) {
+			int a = img.pixels[i] >> 24 & 0xFF;
+
+			if (c == "r" || c == "red") {
+				v = img.pixels[i] >> 16 & 0xFF;
+			} else if (c == "g" || c == "green") {
+				v = img.pixels[i] >> 8 & 0xFF;
+			} else if (c == "b" || c == "blue") {
+				v = img.pixels[i] & 0xFF;
+			}
+
+			out.pixels[i] = a << 24 | v << 16 | v << 8 | v;
+		}
+
+		out.updatePixels();
+
 		return out;
 	}
 
