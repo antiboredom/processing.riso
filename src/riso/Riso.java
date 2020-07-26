@@ -379,23 +379,45 @@ public class Riso extends PGraphicsJava2D {
 		super.image(newImage, x, y, w, h);
 	}
 
-	public void cutout(int[] maskArray) {
-		// TO DO!
+	public void cutout(PImage img) {
+		cutout(img, false);
+	}
+
+	public void cutout(PImage img, boolean antialias) {
+		img.loadPixels();
+		cutout(img.pixels, antialias);
+	}
+
+	public void cutout(int[] maskArray, boolean antialias) {
+		// TODO: Add anti-aliasing;
+
 		loadPixels();
+
 		// don't execute if mask image is different size
 		if (maskArray.length != pixels.length) {
 			throw new IllegalArgumentException("cutout() can only be used with an image that's the same size.");
 		}
+
 		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = ((maskArray[i] & 0xff) << 24) | (pixels[i] & 0xffffff);
+			// if the maskarray's alpha is larger than 0, set the layers alpha to be 0
+			// otherwise keep the layers current alpha
+			int originalA = (pixels[i] >> 24) & 0xFF;
+			int maskA = (maskArray[i] >> 24) & 0xFF;
+			int newA = originalA;
+			if (maskA > 0) {
+				if (antialias) {
+					newA = Math.min(255 - maskA, originalA);
+				} else {
+					newA = 0;
+				}
+			}
+			pixels[i] = newA << 24 | (pixels[i] & 0xffffff);
 		}
-		format = ARGB;
+
 		updatePixels();
 	}
 
 	public static PImage extractRGBChannel(PImage img, String c) {
-		// TODO: switch to bitshifting.
-
 		c = c.toLowerCase();
 
 		PImage out = applet.createImage(img.width, img.height, ARGB);
@@ -403,19 +425,20 @@ public class Riso extends PGraphicsJava2D {
 
 		out.loadPixels();
 
+		int v = 0;
+
 		for (int i = 0; i < img.pixels.length; i++) {
-			int r = (int) applet.red(img.pixels[i]);
-			int g = (int) applet.green(img.pixels[i]);
-			int b = (int) applet.blue(img.pixels[i]);
-			int a = (int) applet.alpha(img.pixels[i]);
+			int a = img.pixels[i] >> 24 & 0xFF;
 
 			if (c == "r" || c == "red") {
-				out.pixels[i] = applet.color(r, r, r, a);
+				v = img.pixels[i] >> 16 & 0xFF;
 			} else if (c == "g" || c == "green") {
-				out.pixels[i] = applet.color(g, g, g, a);
+				v = img.pixels[i] >> 8 & 0xFF;
 			} else if (c == "b" || c == "blue") {
-				out.pixels[i] = applet.color(b, b, b, a);
+				v = img.pixels[i] & 0xFF;
 			}
+
+			out.pixels[i] = a << 24 | v << 16 | v << 8 | v;
 		}
 
 		out.updatePixels();
@@ -443,8 +466,7 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public static PImage extractCMYKChannel(PImage img, String c) {
-		// TODO: switch to bitshifting.
-		// TODO: implement multichannel
+		// multichannel extraction courtesy of Robin Sloan
 
 		c = c.toLowerCase();
 
@@ -465,22 +487,14 @@ public class Riso extends PGraphicsJava2D {
 			desiredChannels.add(3);
 
 		for (int i = 0; i < img.pixels.length; i++) {
-			int r = (int) applet.red(img.pixels[i]);
-			int g = (int) applet.green(img.pixels[i]);
-			int b = (int) applet.blue(img.pixels[i]);
-			int a = (int) applet.alpha(img.pixels[i]);
-
-			int[] cmyk = rgb2cmyk(r, g, b);
-
-			float val = 0f;
-
+			int a = (img.pixels[i] >> 24) & 0xFF;
+			int[] cmyk = rgb2cmyk((img.pixels[i] >> 16) & 0xFF, (img.pixels[i] >> 8) & 0xFF, img.pixels[i] & 0xFF);
+			int val = 0;
 			for (int desiredChannel : desiredChannels) {
 				val += cmyk[desiredChannel];
 			}
-
 			val /= desiredChannels.size();
-
-			out.pixels[i] = applet.color(val, val, val, a);
+			out.pixels[i] = a << 24 | val << 16 | val << 8 | val;
 		}
 
 		out.updatePixels();
@@ -541,18 +555,18 @@ public class Riso extends PGraphicsJava2D {
 				float avg = applet.brightness(pxl);
 				if (avg < 255) {
 					float darkness = (255.0f - avg) / 255.0f;
-					
+
 					if (shape == "circle") {
 						out.ellipse(x, y, gridsize * darkness, gridsize * darkness);
 					} else if (shape == "line") {
 						out.rect(x, y, gridsize, gridsize * darkness);
-					}else if (shape == "square") {
-						out.rect(x, y, gridsize*darkness, gridsize * darkness);
+					} else if (shape == "square") {
+						out.rect(x, y, gridsize * darkness, gridsize * darkness);
 					}
 				}
 			}
 		}
-		
+
 		out.endDraw();
 
 		rotatedCanvas.beginDraw();
