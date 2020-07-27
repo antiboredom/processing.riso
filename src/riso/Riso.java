@@ -112,7 +112,7 @@ public class Riso extends PGraphicsJava2D {
 
 	};
 
-	private static PApplet applet;
+	private PApplet applet;
 
 	public static ArrayList<Riso> channels = new ArrayList<Riso>();
 
@@ -156,9 +156,7 @@ public class Riso extends PGraphicsJava2D {
 
 		channelColor = _channelColor;
 
-		if (applet == null) {
-			applet = p;
-		}
+		applet = p;
 
 		channelIndex = channels.size();
 
@@ -174,10 +172,13 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public void pre() {
+		System.out.println("pre");
 		beginDraw();
 	}
 
 	public void draw() {
+		System.out.println("post");
+
 		endDraw();
 	}
 
@@ -339,15 +340,15 @@ public class Riso extends PGraphicsJava2D {
 				int newA = antialias ? Math.min(255 - maskA, originalA) : 0;
 				pixels[i] = newA << 24 | (pixels[i] & 0xffffff);
 			}
-			
+
 		}
 
 		updatePixels();
 	}
-	
+
 	public static void listColors() {
 		for (String key : Riso.RISOCOLORS.keySet()) {
-		    System.out.println(key);
+			System.out.println(key);
 		}
 	}
 
@@ -358,11 +359,11 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public static void preview() {
-		applet.blendMode(MULTIPLY);
+		channels.get(0).parent.blendMode(MULTIPLY);
 		for (Riso r : channels) {
 			r.display();
 		}
-		applet.blendMode(BLEND);
+		channels.get(0).parent.blendMode(BLEND);
 	}
 
 	public static void print() {
@@ -395,11 +396,10 @@ public class Riso extends PGraphicsJava2D {
 
 		c = c.toLowerCase();
 
-		PImage out = applet.createImage(img.width, img.height, ARGB);
-		//PImage out = new PImage(img.width, img.height, ARGB);
-		img.loadPixels();
-
+		PImage out = img.parent.createImage(img.width, img.height, ARGB);
 		out.loadPixels();
+
+		img.loadPixels();
 
 		ArrayList<Integer> desiredChannels = new ArrayList<Integer>();
 
@@ -431,7 +431,7 @@ public class Riso extends PGraphicsJava2D {
 	public static PImage extractRGBChannel(PImage img, String c) {
 		c = c.toLowerCase();
 
-		PImage out = applet.createImage(img.width, img.height, ARGB);
+		PImage out = img.parent.createImage(img.width, img.height, ARGB);
 		img.loadPixels();
 
 		out.loadPixels();
@@ -458,7 +458,7 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public static PImage threshold(PImage img, int thresh) {
-		PImage out = applet.createImage(img.width, img.height, ARGB);
+		PImage out = img.parent.createImage(img.width, img.height, ARGB);
 		out.loadPixels();
 
 		img.loadPixels();
@@ -466,8 +466,8 @@ public class Riso extends PGraphicsJava2D {
 		for (int i = 0; i < out.pixels.length; i++) {
 			// double avg = (applet.red(img.pixels[i]) + applet.green(img.pixels[i]) +
 			// applet.blue(img.pixels[i])) / 3.0;
-			float avg = applet.brightness(img.pixels[i]);
-			out.pixels[i] = applet.color(avg < thresh ? 0 : 255);
+			float avg = img.parent.brightness(img.pixels[i]);
+			out.pixels[i] = img.parent.color(avg < thresh ? 0 : 255);
 		}
 
 		out.updatePixels();
@@ -493,8 +493,7 @@ public class Riso extends PGraphicsJava2D {
 		int w = img.width;
 		int h = img.height;
 
-		PGraphics rotatedCanvas = applet.createGraphics(w * 2, h * 2, JAVA2D);
-
+		PGraphics rotatedCanvas = img.parent.createGraphics(w * 2, h * 2, JAVA2D);
 		rotatedCanvas.beginDraw();
 		rotatedCanvas.background(255);
 		rotatedCanvas.imageMode(CENTER);
@@ -506,7 +505,7 @@ public class Riso extends PGraphicsJava2D {
 		rotatedCanvas.endDraw();
 		rotatedCanvas.loadPixels();
 
-		PGraphics out = applet.createGraphics(w * 2, h * 2, JAVA2D);
+		PGraphics out = img.parent.createGraphics(w * 2, h * 2, JAVA2D);
 		out.beginDraw();
 		out.background(255);
 		out.ellipseMode(CORNER);
@@ -519,7 +518,7 @@ public class Riso extends PGraphicsJava2D {
 		for (int x = 0; x < rotatedCanvas.width; x += gridsize) {
 			for (int y = 0; y < rotatedCanvas.height; y += gridsize) {
 				int pxl = rotatedCanvas.pixels[(x + y * rotatedCanvas.width)];
-				float avg = applet.brightness(pxl);
+				float avg = img.parent.brightness(pxl);
 				if (avg < 255) {
 					float darkness = (255.0f - avg) / 255.0f;
 
@@ -545,16 +544,17 @@ public class Riso extends PGraphicsJava2D {
 		rotatedCanvas.pop();
 		rotatedCanvas.endDraw();
 
-		PImage result = rotatedCanvas.get(w / 2, h / 2, w, h);
-		return threshold(result, thresh);
+		PImage result = threshold(rotatedCanvas.get(w / 2, h / 2, w, h), thresh);
+		result.parent = img.parent;
+		return result;
 	}
 
 	public static PImage dither(PImage img, String type) {
 		return dither(img, type, 128);
 	}
-	
+
 	public static PImage dither(PImage img, String type, int threshold) {
-		PImage out = applet.createImage(img.width, img.height, ARGB);
+		PImage out = new PImage(img.width, img.height, ARGB);
 		out.loadPixels();
 
 		img.loadPixels();
@@ -579,26 +579,26 @@ public class Riso extends PGraphicsJava2D {
 		}
 
 		for (int i = 0; i < out.pixels.length; i++) {
-			int r = (int) applet.red(out.pixels[i]);
-			int g = (int) applet.blue(out.pixels[i]);
-			int b = (int) applet.green(out.pixels[i]);
+			int r = (int) img.parent.red(out.pixels[i]);
+			int g = (int) img.parent.blue(out.pixels[i]);
+			int b = (int) img.parent.green(out.pixels[i]);
 			int sum = (int) (lumR[r] + lumG[g] + lumB[b]);
-			out.pixels[i] = applet.color(sum);
+			out.pixels[i] = img.parent.color(sum);
 		}
 
 		for (int i = 0; i < out.pixels.length; i++) {
 
-			 if (type == "bayer") {
+			if (type == "bayer") {
 				// 4x4 Bayer ordered dithering algorithm
 				int x = i / 4 % w;
 				int y = (i / w);
 				int map = ((out.pixels[i] + bayerThresholdMap[x % 4][y % 4]) / 2);
-				out.pixels[i] = map < threshold ? applet.color(0) : applet.color(255);
+				out.pixels[i] = map < threshold ? img.parent.color(0) : img.parent.color(255);
 			} else if (type == "floydsteinberg") {
 				// Floyd–Steinberg dithering algorithm
 				newPixel = out.pixels[i] < 129 ? 0 : 255;
 				err = ((out.pixels[i] - newPixel) / 16);
-				out.pixels[i] = applet.color(newPixel);
+				out.pixels[i] = img.parent.color(newPixel);
 				out.pixels[i + 1] += err * 7;
 				out.pixels[i + 1 * w - 1] += err * 3;
 				out.pixels[i + 1 * w] += err * 5;
