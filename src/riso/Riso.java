@@ -2,8 +2,10 @@ package riso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import processing.core.*;
 import processing.awt.PGraphicsJava2D;
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PGraphics;
 
 /**
  * 
@@ -22,215 +24,178 @@ public class Riso extends PGraphicsJava2D {
 
 	public final static String VERSION = "##library.prettyVersion##";
 
-	public static int BLACK = 0x000000;
-	public static int BURGUNDY = 0x914e72;
-	public static int BLUE = 0x0078bf;
-	public static int GREEN = 0x00a95c;
-	public static int MEDIUMBLUE = 0x3255a4;
-	public static int BRIGHTRED = 0xf15060;
-	public static int RISOFEDERALBLUE = 0x3d5588;
-	public static int PURPLE = 0x765ba7;
-	public static int TEAL = 0x00838a;
-	public static int FLATGOLD = 0xbb8b41;
-	public static int HUNTERGREEN = 0x407060;
-	public static int RED = 0xff665e;
-	public static int BROWN = 0x925f52;
-	public static int YELLOW = 0xffe800;
-	public static int MARINERED = 0xd2515e;
-	public static int ORANGE = 0xff6c2f;
-	public static int FLUORESCENTPINK = 0xff48b0;
-	public static int LIGHTGRAY = 0x88898a;
-	public static int METALLICGOLD = 0xac936e;
-	public static int CRIMSON = 0xe45d50;
-	public static int FLUORESCENTORANGE = 0xff7477;
-	public static int CORNFLOWER = 0x62a8e5;
-	public static int SKYBLUE = 0x4982cf;
-	public static int SEABLUE = 0x0074a2;
-	public static int LAKE = 0x235ba8;
-	public static int INDIGO = 0x484d7a;
-	public static int MIDNIGHT = 0x435060;
-	public static int MIST = 0xd5e4c0;
-	public static int GRANITE = 0xa5aaa8;
-	public static int CHARCOAL = 0x70747c;
-	public static int SMOKYTEAL = 0x5f8289;
-	public static int STEEL = 0x375e77;
-	public static int SLATE = 0x5e695e;
-	public static int TURQUOISE = 0x00aa93;
-	public static int EMERALD = 0x19975d;
-	public static int GRASS = 0x397e58;
-	public static int FOREST = 0x516e5a;
-	public static int SPRUCE = 0x4a635d;
-	public static int MOSS = 0x68724d;
-	public static int SEAFOAM = 0x62c2b1;
-	public static int KELLYGREEN = 0x67b346;
-	public static int LIGHTTEAL = 0x009da5;
-	public static int IVY = 0x169b62;
-	public static int PINE = 0x237e74;
-	public static int LAGOON = 0x2f6165;
-	public static int VIOLET = 0x9d7ad2;
-	public static int ORCHID = 0xaa60bf;
-	public static int PLUM = 0x845991;
-	public static int RAISIN = 0x775d7a;
-	public static int GRAPE = 0x6c5d80;
-	public static int SCARLET = 0xf65058;
-	public static int TOMATO = 0xd2515e;
-	public static int CRANBERRY = 0xd1517a;
-	public static int MAROON = 0x9e4c6e;
-	public static int RASPBERRYRED = 0xd1517a;
-	public static int BRICK = 0xa75154;
-	public static int LIGHTLIME = 0xe3ed55;
-	public static int SUNFLOWER = 0xffb511;
-	public static int MELON = 0xffae3b;
-	public static int APRICOT = 0xf6a04d;
-	public static int PAPRIKA = 0xee7f4b;
-	public static int PUMPKIN = 0xff6f4c;
-	public static int BRIGHTOLIVEGREEN = 0xb49f29;
-	public static int BRIGHTGOLD = 0xba8032;
-	public static int COPPER = 0xbd6439;
-	public static int MAHOGANY = 0x8e595a;
-	public static int BISQUE = 0xf2cdcf;
-	public static int BUBBLEGUM = 0xf984ca;
-	public static int LIGHTMAUVE = 0xe6b5c9;
-	public static int DARKMAUVE = 0xbd8ca6;
-	public static int WINE = 0x914e72;
-	public static int GRAY = 0x928d88;
-	public static int CORAL = 0xff8e91;
-	public static int WHITE = 0xffffff;
-	public static int AQUA = 0x5ec8e5;
-	public static int MINT = 0x82d8d5;
-	public static int CLEARMEDIUM = 0xf2f2f2;
-	public static int FLUORESCENTYELLOW = 0xffe916;
-	public static int FLUORESCENTRED = 0xff4c65;
-	public static int FLUORESCENTGREEN = 0x44d62c;
-
-	public final static HashMap<Integer, String> RISOCOLORS;
+	public final static HashMap<String, Integer> RISOCOLORS;
 
 	static {
-		RISOCOLORS = new HashMap<Integer, String>();
+		RISOCOLORS = new HashMap<String, Integer>();
 
-		RISOCOLORS.put(0x000000, "BLACK");
-		RISOCOLORS.put(0x914e72, "BURGUNDY");
-		RISOCOLORS.put(0x0078bf, "BLUE");
-		RISOCOLORS.put(0x00a95c, "GREEN");
-		RISOCOLORS.put(0x3255a4, "MEDIUMBLUE");
-		RISOCOLORS.put(0xf15060, "BRIGHTRED");
-		RISOCOLORS.put(0x3d5588, "RISOFEDERALBLUE");
-		RISOCOLORS.put(0x765ba7, "PURPLE");
-		RISOCOLORS.put(0x00838a, "TEAL");
-		RISOCOLORS.put(0xbb8b41, "FLATGOLD");
-		RISOCOLORS.put(0x407060, "HUNTERGREEN");
-		RISOCOLORS.put(0xff665e, "RED");
-		RISOCOLORS.put(0x925f52, "BROWN");
-		RISOCOLORS.put(0xffe800, "YELLOW");
-		RISOCOLORS.put(0xd2515e, "MARINERED");
-		RISOCOLORS.put(0xff6c2f, "ORANGE");
-		RISOCOLORS.put(0xff48b0, "FLUORESCENTPINK");
-		RISOCOLORS.put(0x88898a, "LIGHTGRAY");
-		RISOCOLORS.put(0xac936e, "METALLICGOLD");
-		RISOCOLORS.put(0xe45d50, "CRIMSON");
-		RISOCOLORS.put(0xff7477, "FLUORESCENTORANGE");
-		RISOCOLORS.put(0x62a8e5, "CORNFLOWER");
-		RISOCOLORS.put(0x4982cf, "SKYBLUE");
-		RISOCOLORS.put(0x0074a2, "SEABLUE");
-		RISOCOLORS.put(0x235ba8, "LAKE");
-		RISOCOLORS.put(0x484d7a, "INDIGO");
-		RISOCOLORS.put(0x435060, "MIDNIGHT");
-		RISOCOLORS.put(0xd5e4c0, "MIST");
-		RISOCOLORS.put(0xa5aaa8, "GRANITE");
-		RISOCOLORS.put(0x70747c, "CHARCOAL");
-		RISOCOLORS.put(0x5f8289, "SMOKYTEAL");
-		RISOCOLORS.put(0x375e77, "STEEL");
-		RISOCOLORS.put(0x5e695e, "SLATE");
-		RISOCOLORS.put(0x00aa93, "TURQUOISE");
-		RISOCOLORS.put(0x19975d, "EMERALD");
-		RISOCOLORS.put(0x397e58, "GRASS");
-		RISOCOLORS.put(0x516e5a, "FOREST");
-		RISOCOLORS.put(0x4a635d, "SPRUCE");
-		RISOCOLORS.put(0x68724d, "MOSS");
-		RISOCOLORS.put(0x62c2b1, "SEAFOAM");
-		RISOCOLORS.put(0x67b346, "KELLYGREEN");
-		RISOCOLORS.put(0x009da5, "LIGHTTEAL");
-		RISOCOLORS.put(0x169b62, "IVY");
-		RISOCOLORS.put(0x237e74, "PINE");
-		RISOCOLORS.put(0x2f6165, "LAGOON");
-		RISOCOLORS.put(0x9d7ad2, "VIOLET");
-		RISOCOLORS.put(0xaa60bf, "ORCHID");
-		RISOCOLORS.put(0x845991, "PLUM");
-		RISOCOLORS.put(0x775d7a, "RAISIN");
-		RISOCOLORS.put(0x6c5d80, "GRAPE");
-		RISOCOLORS.put(0xf65058, "SCARLET");
-		RISOCOLORS.put(0xd2515e, "TOMATO");
-		RISOCOLORS.put(0xd1517a, "CRANBERRY");
-		RISOCOLORS.put(0x9e4c6e, "MAROON");
-		RISOCOLORS.put(0xd1517a, "RASPBERRYRED");
-		RISOCOLORS.put(0xa75154, "BRICK");
-		RISOCOLORS.put(0xe3ed55, "LIGHTLIME");
-		RISOCOLORS.put(0xffb511, "SUNFLOWER");
-		RISOCOLORS.put(0xffae3b, "MELON");
-		RISOCOLORS.put(0xf6a04d, "APRICOT");
-		RISOCOLORS.put(0xee7f4b, "PAPRIKA");
-		RISOCOLORS.put(0xff6f4c, "PUMPKIN");
-		RISOCOLORS.put(0xb49f29, "BRIGHTOLIVEGREEN");
-		RISOCOLORS.put(0xba8032, "BRIGHTGOLD");
-		RISOCOLORS.put(0xbd6439, "COPPER");
-		RISOCOLORS.put(0x8e595a, "MAHOGANY");
-		RISOCOLORS.put(0xf2cdcf, "BISQUE");
-		RISOCOLORS.put(0xf984ca, "BUBBLEGUM");
-		RISOCOLORS.put(0xe6b5c9, "LIGHTMAUVE");
-		RISOCOLORS.put(0xbd8ca6, "DARKMAUVE");
-		RISOCOLORS.put(0x914e72, "WINE");
-		RISOCOLORS.put(0x928d88, "GRAY");
-		RISOCOLORS.put(0xff8e91, "CORAL");
-		RISOCOLORS.put(0xffffff, "WHITE");
-		RISOCOLORS.put(0x5ec8e5, "AQUA");
-		RISOCOLORS.put(0x82d8d5, "MINT");
-		RISOCOLORS.put(0xf2f2f2, "CLEARMEDIUM");
-		RISOCOLORS.put(0xffe916, "FLUORESCENTYELLOW");
-		RISOCOLORS.put(0xff4c65, "FLUORESCENTRED");
-		RISOCOLORS.put(0x44d62c, "FLUORESCENTGREEN");
+		RISOCOLORS.put("BLACK", 0x000000);
+		RISOCOLORS.put("BURGUNDY", 0x914e72);
+		RISOCOLORS.put("BLUE", 0x0078bf);
+		RISOCOLORS.put("GREEN", 0x00a95c);
+		RISOCOLORS.put("MEDIUMBLUE", 0x3255a4);
+		RISOCOLORS.put("BRIGHTRED", 0xf15060);
+		RISOCOLORS.put("RISOFEDERALBLUE", 0x3d5588);
+		RISOCOLORS.put("PURPLE", 0x765ba7);
+		RISOCOLORS.put("TEAL", 0x00838a);
+		RISOCOLORS.put("FLATGOLD", 0xbb8b41);
+		RISOCOLORS.put("HUNTERGREEN", 0x407060);
+		RISOCOLORS.put("RED", 0xff665e);
+		RISOCOLORS.put("BROWN", 0x925f52);
+		RISOCOLORS.put("YELLOW", 0xffe800);
+		RISOCOLORS.put("MARINERED", 0xd2515e);
+		RISOCOLORS.put("ORANGE", 0xff6c2f);
+		RISOCOLORS.put("FLUORESCENTPINK", 0xff48b0);
+		RISOCOLORS.put("LIGHTGRAY", 0x88898a);
+		RISOCOLORS.put("METALLICGOLD", 0xac936e);
+		RISOCOLORS.put("CRIMSON", 0xe45d50);
+		RISOCOLORS.put("FLUORESCENTORANGE", 0xff7477);
+		RISOCOLORS.put("CORNFLOWER", 0x62a8e5);
+		RISOCOLORS.put("SKYBLUE", 0x4982cf);
+		RISOCOLORS.put("SEABLUE", 0x0074a2);
+		RISOCOLORS.put("LAKE", 0x235ba8);
+		RISOCOLORS.put("INDIGO", 0x484d7a);
+		RISOCOLORS.put("MIDNIGHT", 0x435060);
+		RISOCOLORS.put("MIST", 0xd5e4c0);
+		RISOCOLORS.put("GRANITE", 0xa5aaa8);
+		RISOCOLORS.put("CHARCOAL", 0x70747c);
+		RISOCOLORS.put("SMOKYTEAL", 0x5f8289);
+		RISOCOLORS.put("STEEL", 0x375e77);
+		RISOCOLORS.put("SLATE", 0x5e695e);
+		RISOCOLORS.put("TURQUOISE", 0x00aa93);
+		RISOCOLORS.put("EMERALD", 0x19975d);
+		RISOCOLORS.put("GRASS", 0x397e58);
+		RISOCOLORS.put("FOREST", 0x516e5a);
+		RISOCOLORS.put("SPRUCE", 0x4a635d);
+		RISOCOLORS.put("MOSS", 0x68724d);
+		RISOCOLORS.put("SEAFOAM", 0x62c2b1);
+		RISOCOLORS.put("KELLYGREEN", 0x67b346);
+		RISOCOLORS.put("LIGHTTEAL", 0x009da5);
+		RISOCOLORS.put("IVY", 0x169b62);
+		RISOCOLORS.put("PINE", 0x237e74);
+		RISOCOLORS.put("LAGOON", 0x2f6165);
+		RISOCOLORS.put("VIOLET", 0x9d7ad2);
+		RISOCOLORS.put("ORCHID", 0xaa60bf);
+		RISOCOLORS.put("PLUM", 0x845991);
+		RISOCOLORS.put("RAISIN", 0x775d7a);
+		RISOCOLORS.put("GRAPE", 0x6c5d80);
+		RISOCOLORS.put("SCARLET", 0xf65058);
+		RISOCOLORS.put("TOMATO", 0xd2515e);
+		RISOCOLORS.put("CRANBERRY", 0xd1517a);
+		RISOCOLORS.put("MAROON", 0x9e4c6e);
+		RISOCOLORS.put("RASPBERRYRED", 0xd1517a);
+		RISOCOLORS.put("BRICK", 0xa75154);
+		RISOCOLORS.put("LIGHTLIME", 0xe3ed55);
+		RISOCOLORS.put("SUNFLOWER", 0xffb511);
+		RISOCOLORS.put("MELON", 0xffae3b);
+		RISOCOLORS.put("APRICOT", 0xf6a04d);
+		RISOCOLORS.put("PAPRIKA", 0xee7f4b);
+		RISOCOLORS.put("PUMPKIN", 0xff6f4c);
+		RISOCOLORS.put("BRIGHTOLIVEGREEN", 0xb49f29);
+		RISOCOLORS.put("BRIGHTGOLD", 0xba8032);
+		RISOCOLORS.put("COPPER", 0xbd6439);
+		RISOCOLORS.put("MAHOGANY", 0x8e595a);
+		RISOCOLORS.put("BISQUE", 0xf2cdcf);
+		RISOCOLORS.put("BUBBLEGUM", 0xf984ca);
+		RISOCOLORS.put("LIGHTMAUVE", 0xe6b5c9);
+		RISOCOLORS.put("DARKMAUVE", 0xbd8ca6);
+		RISOCOLORS.put("WINE", 0x914e72);
+		RISOCOLORS.put("GRAY", 0x928d88);
+		RISOCOLORS.put("CORAL", 0xff8e91);
+		RISOCOLORS.put("WHITE", 0xffffff);
+		RISOCOLORS.put("AQUA", 0x5ec8e5);
+		RISOCOLORS.put("MINT", 0x82d8d5);
+		RISOCOLORS.put("CLEARMEDIUM", 0xf2f2f2);
+		RISOCOLORS.put("FLUORESCENTYELLOW", 0xffe916);
+		RISOCOLORS.put("FLUORESCENTRED", 0xff4c65);
+		RISOCOLORS.put("FLUORESCENTGREEN", 0x44d62c);
+
 	};
-	
+
 	private PApplet applet;
 
-	public ArrayList<Channel> channels = new ArrayList<Channel>();
-	
-	public Channel add(int channelColor) {
-		Channel c = add(channelColor, applet.width, applet.height);
+	public ArrayList<Color> channels = new ArrayList<Color>();
+
+	public Riso(PApplet p) {
+		applet = p;
+
+		applet.registerMethod("pre", this);
+		applet.registerMethod("draw", this);
+
+	}
+
+	public void pre() {
+		for (Color c : channels) {
+			c.beginDraw();
+		}
+	}
+
+	public void draw() {
+		for (Color c : channels) {
+			c.endDraw();
+		}
+	}
+
+	public Color add(String channelColor) {
+		channelColor = channelColor.toUpperCase();
+		if (!RISOCOLORS.containsKey(channelColor)) {
+			throw new IllegalArgumentException("Color not found.");
+		}
+		int color = RISOCOLORS.get(channelColor);
+		Color c = add(color, channelColor, applet.width, applet.height);
 		return c;
 	}
 
-	public Channel add(int channelColor, int w, int h) {
-		int channelIndex = channels.size();
-		String channelName = RISOCOLORS.get(channelColor);
+	public Color add(String channelColor, int w, int h) {
+		channelColor = channelColor.toUpperCase();
+		if (!RISOCOLORS.containsKey(channelColor)) {
+			throw new IllegalArgumentException("Color not found.");
+		}
+		int color = RISOCOLORS.get(channelColor);
+		Color c = add(color, channelColor, w, h);
+		return c;
+	}
 
-		if (channelName == null)
+	public Color add(int channelColor) {
+		Color c = add(channelColor, "", applet.width, applet.height);
+		return c;
+	}
+
+	public Color add(int channelColor, String channelName, int w, int h) {
+		int channelIndex = channels.size();
+
+		if (channelName == "")
 			channelName = String.valueOf(channelIndex);
 
-		Channel c = new Channel(applet, channelColor, w, h);
-		
+		Color c = new Color(applet, channelColor, w, h);
+
 		c.channelIndex = channelIndex;
 		c.channelName = channelName;
-		
+
 		channels.add(c);
-		
+
 		return c;
+	}
+
+	public void clear() {
+		for (Color r : channels) {
+			r.clear();
+		}
 	}
 
 	public void preview() {
 		applet.blendMode(MULTIPLY);
-		for (Channel r : channels) {
+		for (Color r : channels) {
 			r.draw();
 		}
 		applet.blendMode(BLEND);
 	}
 
 	public void print() {
-		for (Channel r : channels) {
+		for (Color r : channels) {
 			r.export();
 		}
 	}
-
-	
 
 	public int[] rgb2cmyk(int r, int g, int b) {
 		// adapted from https://mrtan.me/post/java-rgb-to-cmyk-converter.html
@@ -288,6 +253,35 @@ public class Riso extends PGraphicsJava2D {
 		return out;
 	}
 
+	public PImage extractRGBChannel(PImage img, String c) {
+		c = c.toLowerCase();
+
+		PImage out = applet.createImage(img.width, img.height, ARGB);
+		img.loadPixels();
+
+		out.loadPixels();
+
+		int v = 0;
+
+		for (int i = 0; i < img.pixels.length; i++) {
+			int a = img.pixels[i] >> 24 & 0xFF;
+
+			if (c == "r" || c == "red") {
+				v = img.pixels[i] >> 16 & 0xFF;
+			} else if (c == "g" || c == "green") {
+				v = img.pixels[i] >> 8 & 0xFF;
+			} else if (c == "b" || c == "blue") {
+				v = img.pixels[i] & 0xFF;
+			}
+
+			out.pixels[i] = a << 24 | v << 16 | v << 8 | v;
+		}
+
+		out.updatePixels();
+
+		return out;
+	}
+
 	public PImage threshold(PImage img, int thresh) {
 		PImage out = applet.createImage(img.width, img.height, ARGB);
 		out.loadPixels();
@@ -303,6 +297,18 @@ public class Riso extends PGraphicsJava2D {
 
 		out.updatePixels();
 		return out;
+	}
+
+	public PImage halftone(PImage img, String shape) {
+		return halftone(img, shape, 5, 0, 128);
+	}
+
+	public PImage halftone(PImage img, String shape, int frequency) {
+		return halftone(img, shape, frequency, 0, 128);
+	}
+
+	public PImage halftone(PImage img, String shape, int frequency, float angle) {
+		return halftone(img, shape, frequency, angle, 128);
 	}
 
 	public PImage halftone(PImage img, String shape, int frequency, float angle, int thresh) {
@@ -409,13 +415,13 @@ public class Riso extends PGraphicsJava2D {
 			} else if (type == "bayer") {
 				// 4x4 Bayer ordered dithering algorithm
 				int x = i / 4 % w;
-				int y = (int) (i / w);
-				int map = (int) ((out.pixels[i] + bayerThresholdMap[x % 4][y % 4]) / 2);
+				int y = (i / w);
+				int map = ((out.pixels[i] + bayerThresholdMap[x % 4][y % 4]) / 2);
 				out.pixels[i] = map < threshold ? applet.color(0) : applet.color(255);
 			} else if (type == "floydsteinberg") {
 				// Floyd–Steinberg dithering algorithm
 				newPixel = out.pixels[i] < 129 ? 0 : 255;
-				err = (int) ((out.pixels[i] - newPixel) / 16);
+				err = ((out.pixels[i] - newPixel) / 16);
 				out.pixels[i] = applet.color(newPixel);
 				out.pixels[i + 1] += err * 7;
 				out.pixels[i + 1 * w - 1] += err * 3;
@@ -424,7 +430,7 @@ public class Riso extends PGraphicsJava2D {
 			} else {
 				// Bill Atkinson's dithering algorithm
 				newPixel = out.pixels[i] < 129 ? 0 : 255;
-				err = (int) ((out.pixels[i] - newPixel) / 8);
+				err = ((out.pixels[i] - newPixel) / 8);
 				out.pixels[i] = newPixel;
 
 				out.pixels[i + 1] += err;
@@ -439,35 +445,6 @@ public class Riso extends PGraphicsJava2D {
 			// out.pixels[i + 1] = out.pixels[i + 2] = out.pixels[i];
 		}
 		out.updatePixels();
-		return out;
-	}
-	
-	public PImage extractRGBChannel(PImage img, String c) {
-		c = c.toLowerCase();
-
-		PImage out = applet.createImage(img.width, img.height, ARGB);
-		img.loadPixels();
-
-		out.loadPixels();
-
-		int v = 0;
-
-		for (int i = 0; i < img.pixels.length; i++) {
-			int a = img.pixels[i] >> 24 & 0xFF;
-
-			if (c == "r" || c == "red") {
-				v = img.pixels[i] >> 16 & 0xFF;
-			} else if (c == "g" || c == "green") {
-				v = img.pixels[i] >> 8 & 0xFF;
-			} else if (c == "b" || c == "blue") {
-				v = img.pixels[i] & 0xFF;
-			}
-
-			out.pixels[i] = a << 24 | v << 16 | v << 8 | v;
-		}
-
-		out.updatePixels();
-
 		return out;
 	}
 

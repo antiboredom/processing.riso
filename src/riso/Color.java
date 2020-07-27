@@ -1,23 +1,24 @@
 package riso;
 
+
 import processing.awt.PGraphicsJava2D;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-public class Channel extends PGraphicsJava2D {
+public class Color extends PGraphicsJava2D {
 	public int channelColor;
 	public int channelIndex;
 	public String channelName;
 
-	public Channel(PApplet p, int _channelColor) {
+	public Color(PApplet p, int _channelColor) {
 		initialize(_channelColor, p.width, p.height, p, p.dataPath(""));
 	}
 
-	public Channel(PApplet p, int _channelColor, int w, int h) {
+	public Color(PApplet p, int _channelColor, int w, int h) {
 		this(p, _channelColor, w, h, p.dataPath(""));
 	}
 
-	public Channel(PApplet p, int _channelColor, int w, int h, String s) {
+	public Color(PApplet p, int _channelColor, int w, int h, String s) {
 		initialize(_channelColor, w, h, p, s);
 	}
 
@@ -28,6 +29,7 @@ public class Channel extends PGraphicsJava2D {
 		setSize(w, h);
 
 		channelColor = _channelColor;
+		beginDraw();
 	}
 
 	public void draw() {
@@ -172,8 +174,6 @@ public class Channel extends PGraphicsJava2D {
 	}
 
 	public void cutout(int[] maskArray, boolean antialias) {
-		// TODO: Add anti-aliasing;
-
 		loadPixels();
 
 		// don't execute if mask image is different size
@@ -198,6 +198,16 @@ public class Channel extends PGraphicsJava2D {
 		}
 
 		updatePixels();
+	}
+	
+	
+
+	public void threshold(int thresh) {
+		
+	}
+
+	public void halftone(String shape, int frequency, float angle, int thresh) {
+		
 	}
 
 }
