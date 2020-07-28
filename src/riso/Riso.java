@@ -112,6 +112,10 @@ public class Riso extends PGraphicsJava2D {
 
 	};
 
+	private static final float LUMR = 0.299f;
+	private static final float LUMG = 0.587f;
+	private static final float LUMB = 0.144f;
+
 	private PApplet applet;
 
 	public static ArrayList<Riso> channels = new ArrayList<Riso>();
@@ -172,13 +176,10 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public void pre() {
-		System.out.println("pre");
 		beginDraw();
 	}
 
 	public void draw() {
-		System.out.println("post");
-
 		endDraw();
 	}
 
@@ -466,8 +467,6 @@ public class Riso extends PGraphicsJava2D {
 		img.loadPixels();
 
 		for (int i = 0; i < out.pixels.length; i++) {
-			// double avg = (applet.red(img.pixels[i]) + applet.green(img.pixels[i]) +
-			// applet.blue(img.pixels[i])) / 3.0;
 			float avg = img.parent.brightness(img.pixels[i]);
 			out.pixels[i] = img.parent.color(avg < thresh ? 0 : 255);
 		}
@@ -521,6 +520,9 @@ public class Riso extends PGraphicsJava2D {
 			for (int y = 0; y < rotatedCanvas.height; y += gridsize) {
 				int pxl = rotatedCanvas.pixels[(x + y * rotatedCanvas.width)];
 				float avg = img.parent.brightness(pxl);
+//				float avg = luminance(pxl);
+//				float avg = average(pxl);
+
 				if (avg < 255) {
 					float darkness = (255.0f - avg) / 255.0f;
 
@@ -551,79 +553,63 @@ public class Riso extends PGraphicsJava2D {
 		return result;
 	}
 
+	public static PImage dither(PImage img) {
+		return dither(img, "bayer", 128);
+	}
+
+	public static PImage dither(PImage img, int threshold) {
+		return dither(img, "bayer", threshold);
+	}
+
 	public static PImage dither(PImage img, String type) {
 		return dither(img, type, 128);
 	}
 
 	public static PImage dither(PImage img, String type, int threshold) {
-		PImage out = new PImage(img.width, img.height, ARGB);
-		out.loadPixels();
-
-		img.loadPixels();
-
+		// TODO: add floydsteinberg and Bill Atkinson
 		// source adapted from:
 		// https://github.com/meemoo/meemooapp/blob/44236a29574812026407c0288ab15390e88b556a/src/nodes/image-monochrome-worker.js
 
+		PImage out = img.get();
+		out.parent = img.parent;
+
 		int w = out.width;
-		int newPixel, err;
+		// int newPixel, err;
 
 		int[][] bayerThresholdMap = { { 15, 135, 45, 165 }, { 195, 75, 225, 105 }, { 60, 180, 30, 150 },
 				{ 240, 120, 210, 90 } };
 
-		double lumR[] = new double[256];
-		double lumG[] = new double[256];
-		double lumB[] = new double[256];
-
-		for (int i = 0; i < 256; i++) {
-			lumR[i] = i * 0.299;
-			lumG[i] = i * 0.587;
-			lumB[i] = i * 0.114;
-		}
-
 		for (int i = 0; i < out.pixels.length; i++) {
-			int r = (int) img.parent.red(out.pixels[i]);
-			int g = (int) img.parent.blue(out.pixels[i]);
-			int b = (int) img.parent.green(out.pixels[i]);
-			int sum = (int) (lumR[r] + lumG[g] + lumB[b]);
-			out.pixels[i] = img.parent.color(sum);
-		}
-
-		for (int i = 0; i < out.pixels.length; i++) {
+			int lum = luminance(out.pixels[i]);
 
 			if (type == "bayer") {
 				// 4x4 Bayer ordered dithering algorithm
-				int x = i / 4 % w;
-				int y = (i / w);
-				int map = ((out.pixels[i] + bayerThresholdMap[x % 4][y % 4]) / 2);
+				int x = i % w;
+				int y = i / w;
+				int map = (lum + bayerThresholdMap[x % 4][y % 4]) / 2;
 				out.pixels[i] = map < threshold ? img.parent.color(0) : img.parent.color(255);
-			} else if (type == "floydsteinberg") {
-				// Floyd–Steinberg dithering algorithm
-				newPixel = out.pixels[i] < 129 ? 0 : 255;
-				err = ((out.pixels[i] - newPixel) / 16);
-				out.pixels[i] = img.parent.color(newPixel);
-				out.pixels[i + 1] += err * 7;
-				out.pixels[i + 1 * w - 1] += err * 3;
-				out.pixels[i + 1 * w] += err * 5;
-				out.pixels[i + 1 * w + 1] += err * 1;
-			} else {
-				// Bill Atkinson's dithering algorithm
-				newPixel = out.pixels[i] < 129 ? 0 : 255;
-				err = ((out.pixels[i] - newPixel) / 8);
-				out.pixels[i] = newPixel;
-
-				out.pixels[i + 1] += err;
-				out.pixels[i + 2] += err;
-				out.pixels[i + 1 * w - 1] += err;
-				out.pixels[i + 1 * w] += err;
-				out.pixels[i + 1 * w + 1] += err;
-				out.pixels[i + 2 * w] += err;
 			}
-
-			// Set g and b pixels equal to r
-			// out.pixels[i + 1] = out.pixels[i + 2] = out.pixels[i];
 		}
 		out.updatePixels();
 		return out;
+	}
+
+	/**
+	 * returns the luminance value of an RGB color integer.
+	 * 
+	 * @return Integer
+	 */
+	public static int luminance(int c) {
+		return (int) ((c >> 16 & 0xFF) * LUMR + (c >> 8 & 0xFF) * LUMG + (c & 0xFF) * LUMB);
+	}
+	
+	/**
+	 * returns the average value of an RGB color integer.
+	 * 
+	 * @return Integer
+	 */
+	public static float average(int c) {
+		return ((c >> 16 & 0xFF) + (c >> 8 & 0xFF) + (c & 0xFF))/3f;
 	}
 
 	/**
