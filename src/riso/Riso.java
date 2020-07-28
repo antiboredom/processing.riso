@@ -359,11 +359,13 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public static void preview() {
-		channels.get(0).parent.blendMode(MULTIPLY);
-		for (Riso r : channels) {
-			r.display();
+		if (channels.size() > 0) {
+			channels.get(0).parent.blendMode(MULTIPLY);
+			for (Riso r : channels) {
+				r.display();
+			}
+			channels.get(0).parent.blendMode(BLEND);
 		}
-		channels.get(0).parent.blendMode(BLEND);
 	}
 
 	public static void print() {
