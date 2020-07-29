@@ -8,9 +8,9 @@ If you prefer JavaScript, please see [p5.Riso](https://antiboredom.github.io/p5.
 
 ## Getting started
 
-Set up a base Riso object for each color you want to print with. It's constructor takes 4 parameters: the parent applet ("this"), the color, width and height. If you skip widhth and height, it will default to the canvas width and height.
+Set up a base Riso object for each color you want to print with. The constructor takes 4 parameters: the parent applet ("this"), the color, width and height. If you skip width and height, it will default to the canvas width and height.
 
-The color parameter can be a string that is the name of the riso ink color you want to print with.
+The color parameter should be the name of the riso ink color you want to print with, like "black", "green", or "red". You can also pass it a Processing color.
 
 This example prepares an image with black and yellow layers.
 
@@ -25,7 +25,7 @@ void setup() {
 }
 ```
 
-Now that we have Riso objects our black and yellow layers, we can draw graphic elements to each, similar to how you would use a PGraphics object. Place the following in setup() to draw an ellipse on the black and an overlapping ellipse on the yellow layer:
+You can draw graphic elements on each layer similar to how you would use a PGraphics object. Place the following in setup() to draw an ellipse on the black layer and another on the yellow layer:
 
 ```java
 background(255); //set the on screen background to be white
@@ -37,7 +37,7 @@ yellow.fill(255);
 yellow.ellipse(400, height / 2, 300, 300);
 ```
 
-The two ellipses will overlap, which might not be desirable when printing. To fix this, you can use the `cutout()` function:
+The two ellipses will overlap, which may or may not be desirable when printing. To remove the overlap use the `cutout()` function:
 
 ```java
 black.cutout(yellow); // remove pixels from the black layer if they overlap with the yellow layer
@@ -57,6 +57,22 @@ Riso.print()
 
 ## Examples
 
-Cutout:
+[Cutout](https://github.com/antiboredom/processing.riso/blob/master/examples/Cutout/Cutout.pde)
+[![Cutout](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/Cutout/Cutout.pde)
 
+[Color Grid](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorGrid.pde)
+[![Color Grid](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorGrid.pde)
+
+[Color Separation](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparation/ColorSeparation.pde)
+[![Color Separation](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorSeparation.pde)
+
+[Halftone](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparationHalftone/ColorSeparationHalftone.pde)
+[![Halftone](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparationHalftone/ColorSeparationHalftone.pde)
+
+[Poster](https://github.com/antiboredom/processing.riso/blob/master/examples/Poster/Poster.pde)
+[![Poster](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/Poster/Poster.pde)
+
+## Reference
+
+Coming soon!
 
