@@ -61,16 +61,16 @@ Riso.print()
 [![Cutout](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/Cutout/Cutout.pde)
 
 [Color Grid](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorGrid.pde)
-[![Color Grid](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorGrid.pde)
+[![Color Grid](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/color_grid.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorGrid.pde)
 
 [Color Separation](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparation/ColorSeparation.pde)
-[![Color Separation](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorSeparation.pde)
+[![Color Separation](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/color_sep.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorGrid/ColorSeparation.pde)
 
 [Halftone](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparationHalftone/ColorSeparationHalftone.pde)
-[![Halftone](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparationHalftone/ColorSeparationHalftone.pde)
+[![Halftone](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/halftone.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/ColorSeparationHalftone/ColorSeparationHalftone.pde)
 
 [Poster](https://github.com/antiboredom/processing.riso/blob/master/examples/Poster/Poster.pde)
-[![Poster](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/cutout.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/Poster/Poster.pde)
+[![Poster](https://raw.githubusercontent.com/antiboredom/processing.riso/master/docs/poster.png)](https://github.com/antiboredom/processing.riso/blob/master/examples/Poster/Poster.pde)
 
 ## Reference
 
