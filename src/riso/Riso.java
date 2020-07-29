@@ -7,17 +7,15 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PGraphics;
 
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_Profile;
+import java.io.IOException;
+
 /**
  * 
- * Helpful notes about subclassing PGraphics:
- * https://forum.processing.org/two/discussion/16314/pshape-inside-a-class-or-extend-pshape#Item_4
  * 
- * https://discourse.processing.org/t/is-it-possible-to-extend-the-classes-pgraphics-pgraphics3d/1593
- * 
- * (the tag example followed by the name of an example included in folder
- * 'examples' will automatically include the example in the javadoc.)
  *
- * @example Hello
  */
 
 public class Riso extends PGraphicsJava2D {
@@ -116,6 +114,19 @@ public class Riso extends PGraphicsJava2D {
 	private static final float LUMG = 0.587f;
 	private static final float LUMB = 0.144f;
 
+	// https://stackoverflow.com/questions/4858131/rgb-to-cmyk-and-back-algorithm
+
+	private static ColorSpace COLORSPACE;
+	static {
+		try {
+			ClassLoader classLoader = Riso.class.getClassLoader();
+			COLORSPACE = new ICC_ColorSpace(
+					ICC_Profile.getInstance(classLoader.getResourceAsStream("data/UncoatedFOGRA29.icc")));
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+
 	private PApplet applet;
 
 	public static ArrayList<Riso> channels = new ArrayList<Riso>();
@@ -141,7 +152,7 @@ public class Riso extends PGraphicsJava2D {
 		}
 		channelName = _channelColor;
 		int c = RISOCOLORS.get(_channelColor);
-		initialize(p, c, p.width, p.height);
+		initialize(p, c, w, h);
 	}
 
 	public Riso(PApplet p, int _channelColor) {
@@ -360,12 +371,27 @@ public class Riso extends PGraphicsJava2D {
 	}
 
 	public static void preview() {
+		preview(false);
+	}
+
+	public static void preview(boolean shrink) {
 		if (channels.size() > 0) {
-			channels.get(0).parent.blendMode(MULTIPLY);
+			float ratio = 1f;
+			PApplet main = channels.get(0).parent;
+			if (shrink) {
+				float widthRatio = (float) main.width / (float) channels.get(0).width;
+				float heightRatio = (float) main.height / (float) channels.get(0).height;
+				ratio = Math.min(widthRatio, heightRatio);
+
+			}
+			main.pushMatrix();
+			main.scale(ratio);
+			main.blendMode(MULTIPLY);
 			for (Riso r : channels) {
 				r.display();
 			}
-			channels.get(0).parent.blendMode(BLEND);
+			main.blendMode(BLEND);
+			main.popMatrix();
 		}
 	}
 
@@ -375,26 +401,41 @@ public class Riso extends PGraphicsJava2D {
 		}
 	}
 
-	public static int[] rgb2cmyk(int r, int g, int b) {
-		// adapted from https://mrtan.me/post/java-rgb-to-cmyk-converter.html
-		// or https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
+	public static float[] rgb2cmyk(int r, int g, int b) {
+		return rgb2cmyk(r, g, b, false);
 
-		double _r = r / 255.0d;
-		double _g = g / 255.0d;
-		double _b = b / 255.0d;
+	}
 
-		double k = Math.min(Math.min(1d - _r, 1d - _g), 1d - _b);
+	public static float[] rgb2cmyk(int r, int g, int b, boolean useICC) {
 
-		double c = 1.0d - (1.0d - _r - k) / (1.0d - k);
-		double m = 1.0d - (1.0d - _g - k) / (1.0d - k);
-		double y = 1.0d - (1.0d - _b - k) / (1.0d - k);
+		if (useICC) {
+			float[] rgb = { r / 255.0f, g / 255.0f, b / 255.0f };
+			float[] fromRGB = COLORSPACE.fromRGB(rgb);
 
-		k = 1.0d - k;
+			return fromRGB;
+		} else {
+			// adapted from https://mrtan.me/post/java-rgb-to-cmyk-converter.html
+			// or https://www.rapidtables.com/convert/color/rgb-to-cmyk.html
+			// https://stackoverflow.com/questions/4858131/rgb-to-cmyk-and-back-algorithm
 
-		return new int[] { (int) (c * 255), (int) (m * 255), (int) (y * 255), (int) (k * 255) };
+			float _r = r / 255.0f;
+			float _g = g / 255.0f;
+			float _b = b / 255.0f;
+
+			float k = 1.0f - Math.max(Math.max(_r, _g), _b);
+			float c = (1.0f - _r - k) / (1.0f - k);
+			float m = (1.0f - _g - k) / (1.0f - k);
+			float y = (1.0f - _b - k) / (1.0f - k);
+
+			return new float[] { c, m, y, k };
+		}
 	}
 
 	public static PImage extractCMYKChannel(PImage img, String c) {
+		return extractCMYKChannel(img, c, false);
+	}
+
+	public static PImage extractCMYKChannel(PImage img, String c, boolean useICC) {
 		// multichannel extraction courtesy of Robin Sloan
 
 		c = c.toLowerCase();
@@ -417,13 +458,13 @@ public class Riso extends PGraphicsJava2D {
 
 		for (int i = 0; i < img.pixels.length; i++) {
 			int a = (img.pixels[i] >> 24) & 0xFF;
-			int[] cmyk = rgb2cmyk((img.pixels[i] >> 16) & 0xFF, (img.pixels[i] >> 8) & 0xFF, img.pixels[i] & 0xFF);
-			int val = 0;
+			float[] cmyk = rgb2cmyk((img.pixels[i] >> 16) & 0xFF, (img.pixels[i] >> 8) & 0xFF, img.pixels[i] & 0xFF, useICC);
+			float val = 0;
 			for (int desiredChannel : desiredChannels) {
 				val += cmyk[desiredChannel];
 			}
-			val /= desiredChannels.size();
-			out.pixels[i] = a << 24 | val << 16 | val << 8 | val;
+			val = (val / desiredChannels.size()) * 255;
+			out.pixels[i] = a << 24 | 255 - (int) val << 16 | 255 - (int) val << 8 | 255 - (int) val;
 		}
 
 		out.updatePixels();
@@ -602,14 +643,14 @@ public class Riso extends PGraphicsJava2D {
 	public static int luminance(int c) {
 		return (int) ((c >> 16 & 0xFF) * LUMR + (c >> 8 & 0xFF) * LUMG + (c & 0xFF) * LUMB);
 	}
-	
+
 	/**
 	 * returns the average value of an RGB color integer.
 	 * 
 	 * @return Integer
 	 */
 	public static float average(int c) {
-		return ((c >> 16 & 0xFF) + (c >> 8 & 0xFF) + (c & 0xFF))/3f;
+		return ((c >> 16 & 0xFF) + (c >> 8 & 0xFF) + (c & 0xFF)) / 3f;
 	}
 
 	/**
