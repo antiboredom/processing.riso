@@ -135,6 +135,12 @@ public class Riso extends PGraphicsJava2D {
 	public int channelIndex;
 	public String channelName;
 
+	/**
+	 * Riso constructor
+	 * @param p the parent PApplet
+	 * @param _channelColor a Riso color to use
+	 * 
+	 */
 	public Riso(PApplet p, String _channelColor) {
 		_channelColor = _channelColor.toUpperCase();
 		if (!RISOCOLORS.containsKey(_channelColor)) {
@@ -145,6 +151,14 @@ public class Riso extends PGraphicsJava2D {
 		initialize(p, c, p.width, p.height);
 	}
 
+	/**
+	 * Riso constructor
+	 * @param p the parent PApplet
+	 * @param _channelColor a Riso color to use
+	 * @param w the width of the Riso layer
+	 * @param h the height of the Riso layer
+	 * 
+	 */
 	public Riso(PApplet p, String _channelColor, int w, int h) {
 		_channelColor = _channelColor.toUpperCase();
 		if (!RISOCOLORS.containsKey(_channelColor)) {
@@ -155,10 +169,25 @@ public class Riso extends PGraphicsJava2D {
 		initialize(p, c, w, h);
 	}
 
+	/**
+ 	 * Riso constructor
+	 * @param p the parent PApplet
+	 * @param _channelColor a Processing color to use
+	 * 
+	 */
 	public Riso(PApplet p, int _channelColor) {
 		initialize(p, _channelColor, p.width, p.height);
 	}
 
+	/**
+	 * Riso constructor
+	 * 
+	 * @param p the parent PApplet
+	 * @param _channelColor a Processing color to use
+	 * @param w the width of the Riso layer
+	 * @param h the height of the Riso layer
+	 * 
+	 */
 	public Riso(PApplet p, int _channelColor, int w, int h) {
 		initialize(p, _channelColor, w, h);
 	}
@@ -194,16 +223,33 @@ public class Riso extends PGraphicsJava2D {
 		endDraw();
 	}
 
+	/**
+	 * 
+	 * Draws this Riso layer to the parent applet
+	 * 
+	 */
 	public void display() {
 		endDraw();
 		this.parent.image(this, 0, 0);
 	}
-
+	
+	/**
+	 * 
+	 * Exports this layer as a png, suitable for printing.
+	 * Uses the name of the layers color channel.
+	 * 
+	 */
 	public void export() {
 		String filename = channelName + ".png";
 		export(filename);
 	}
 
+	/**
+	 * 
+	 * Exports this layer as a png, suitable for printing.
+	 * @param filename the file name to use.
+	 * 
+	 */
 	public void export(String filename) {
 		PImage buffer = parent.createImage(width, height, ARGB);
 		buffer.loadPixels();
@@ -458,7 +504,8 @@ public class Riso extends PGraphicsJava2D {
 
 		for (int i = 0; i < img.pixels.length; i++) {
 			int a = (img.pixels[i] >> 24) & 0xFF;
-			float[] cmyk = rgb2cmyk((img.pixels[i] >> 16) & 0xFF, (img.pixels[i] >> 8) & 0xFF, img.pixels[i] & 0xFF, useICC);
+			float[] cmyk = rgb2cmyk((img.pixels[i] >> 16) & 0xFF, (img.pixels[i] >> 8) & 0xFF, img.pixels[i] & 0xFF,
+					useICC);
 			float val = 0;
 			for (int desiredChannel : desiredChannels) {
 				val += cmyk[desiredChannel];

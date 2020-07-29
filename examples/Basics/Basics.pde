@@ -27,5 +27,5 @@ void setup() {
   Riso.preview();
   
   // save each layer as a file for printing
-  Riso.print();
+  // Riso.print();
 }

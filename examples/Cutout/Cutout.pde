@@ -15,8 +15,10 @@ void setup() {
   
   // create a graphics object and draw some text on it
   PGraphics textLayer = createGraphics(width, height);
+  PFont font = createFont("Times", 100);
   textLayer.beginDraw();
   textLayer.textSize(100);
+  textLayer.textFont(font);
   textLayer.textAlign(CENTER, CENTER);
   textLayer.text("ABOLISH", width/2, height/2);
   textLayer.endDraw();
@@ -34,5 +36,5 @@ void setup() {
   Riso.preview();
   
   // save each layer as a file for printing
-  Riso.print();
+  // Riso.print();
 }
